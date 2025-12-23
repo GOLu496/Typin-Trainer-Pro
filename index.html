@@ -114,7 +114,7 @@
 
 
     .glow header {
-            width: 85%;
+            width: 96%;
             z-index: 2;
             text-align: center;
             border-radius: 12px;
@@ -139,11 +139,11 @@
 .glow::before {
     content: "";
     position: absolute;
-    right: -670px;
-    top: -190px;
+    content-position: center;
+    align-item: center;
     insert: -50%;
-    width: 2700px;
-    height: 2700px;
+    width: calc(hypot(100vh, 100vh) + 900px);
+    aspect-ratio:1/1;
     background: conic-gradient(
         #4285f4,
         #ea4335,
@@ -170,7 +170,6 @@
 
         .container {
             width: 90%;
-            max-width: 1100px;
             margin-top: 30px;
             margin-bottom: 30px;
             padding: 20px;
@@ -211,8 +210,7 @@
             border-radius: 8px;
             font-size: 1.4em;
             line-height: 1.8;
-            margin-bottom: 20px;
-            /* Single line settings */
+            margin-bottom: 20px;      
             height: 2em; 
             overflow: hidden; 
             white-space: nowrap; 
@@ -254,7 +252,7 @@
             margin-bottom: 20px;
             transition: box-shadow 0.3s;
         }
-        .text-input:focus { box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); }
+        
 
         .controls {
             display: flex;
@@ -382,24 +380,24 @@
         </div>
 
         <div id="initial-controls" class="controls">
-            <select id="time-select">
-                <option value="60">1 Minute</option>
-                <option value="180">3 Minutes</option>
-                <option value="300">5 Minutes</option>
-                </select>
-            <input type="number" id="custom-time" min="10" max="600" value="60" placeholder="Custom Time (s)">
+    <select id="time-unit" style="width: 120px;">
+        <option value="seconds">Seconds</option>
+        <option value="minutes">Minutes</option>
+    </select>
+    
+    <input type="number" id="time-value" min="1" value="60" style="width: 100px;">
 
-            <select id="lesson-mode">
-                <option value="news">Dynamic News (Recommended)</option>
-                <option value="standard">Static Paragraph</option>
-                <option value="code">Code Syntax</option>
-            </select>
-            <div class="gradient-border-wrapper">
-                <button <button id="initial-start-btn" class="inner-button" style="background-color: black;
-    ">Start Test</button> </div>
-
-
+    <select id="lesson-mode">
+        <option value="news">Dynamic News (Recommended)</option>
+        <option value="standard">Static Paragraph</option>
+        <option value="code">Code Syntax</option>
+    </select>
+    
+    <div class="gradient-border-wrapper">
+        <button id="initial-start-btn" class="inner-button" style="background-color: black;">Start Test</button> 
+    </div>
 </div>
+    
         <div id="typing-text-display" class="typing-text-display loading-text">
             Loading Fresh Content... Please wait.
         </div>
@@ -418,422 +416,262 @@
             </div>
     </div>
 
-    <script>
-
-        let state = {
-            testText: "",
-            currentCharIndex: 0,
-            totalErrors: 0,
-            correctKeystrokes: 0,
-            incorrectKeystrokes: 0,
-            timerId: null,
-            initialTime: 60, 
-            timeLeft: 60,
-            isRunning: false,
-            wpmHistory: [],
-            historyLabels: [],
-            timeElapsed: 0,
-        };
-
-
-        const textDisplay = document.getElementById('typing-text-display');
-        const textInput = document.getElementById('text-input');
-        const modeSelect = document.getElementById('lesson-mode');
-        const timeSelect = document.getElementById('time-select');
-        const customTimeInput = document.getElementById('custom-time');
-        const netWpmEl = document.getElementById('net-wpm');
-        const accuracyEl = document.getElementById('accuracy');
-        const errorsCountEl = document.getElementById('errors-count');
-        const timeLeftEl = document.getElementById('time-left');
-        const popupOverlay = document.getElementById('popup-overlay');
-        const popupContent = document.getElementById('popup-content');
-        const initialStartBtn = document.getElementById('initial-start-btn');
-
-        
-        const lineMaxChars = 40; 
-        const scrollThreshold = Math.floor(lineMaxChars / 3); 
-
-
-const textBank = {
-    standard: "A journey of a thousand miles begins with a single step. The only way to do great work is to love what you do. Success is not final, failure is not fatal: it is the courage to continue that counts.",
-    code: "function fetchData(url) { return fetch(url).then(response => response.json()).catch(error => console.error('Error fetching:', error)); }",
-};
-
-
-const newsBank = [
-`In line with a series of hostile moves, the U.S. seized a Venezuelan oil tanker, Skipper, on December 10. Venezuela called it the latest example of Washington’s “piracy, kidnapping, theft of private property, extrajudicial executions in international waters”. The tanker was part of Venezuela’s ongoing efforts to support Cuba through subsidised oil shipments, with proceeds from resale to China providing Havana crucial revenue. For decades, Venezuela has sent oil to Cuba at highly subsidised prices, with Cuba sending doctors and security professionals to Venezuela. The seizure represents a troubling escalation in U.S. policy toward Venezuela under President Nicolás Maduro. It is also clear that the U.S. Secretary of State, Marco Rubio, a major hawk on U.S. foreign policy towards Cuba, has sought to disrupt one of the island nation’s economic lifelines. The overt moves to engineer regime change in Venezuela and other brazen acts mark a new low in U.S. foreign policy, recalling the interventionist era of its Monroe Doctrine in Latin America.`, `Thai immigration officials said they were taken into custody based on an active request from Indian law enforcement. The brothers are expected to be deported to India later today to face questioning and possible charges related to negligence and violations of safety codes. Indian officials held an emergency press conference asking for full cooperation from their Thai counterparts. Use and share with friends our Typing Speed Pro because you deserves better`,
-
-`Nuclear power contributed only around 3% of the electricity generated in India in 2024-25. The government has set a target to install 100 GW of nuclear capacity by 2047, including from at least five indigenous small modular reactors by 2033. In this picture, the SHANTI Bill proposes to change who can legally build and operate civil nuclear facilities. By allowing the Centre to permit nuclear energy activities through licences to government entities, joint ventures and “any other company” (subject to conditions), SHANTI indicates that the intended new class of operators is domestic private capital rather than foreign plant owners. India being able to meet its 100 GW target will indeed require large capital mobilisation, and allowing licensed non-government entities expands the roster of entities that can share the construction risk. SHANTI also seeks to keep the most sensitive fuel cycles in state control while holding room for private participation in plant delivery and parts of the supply chain, reducing scope of commercial entry to those segments most relevant to scale power generation and keeping functions sensitive to nuclear proliferation with the state. The Bill could also mitigate the legal ambiguity new entrants face by putting safety, enforcement and dispute resolution and the terms of participation in the same statute. This could also reduce transaction costs for developers and shrink site approval and commissioning timelines.`,   
-        
-`The decision made by the Reserve Bank of India’s Monetary Policy Committee (MPC) to cut interest rates once again, by 25 basis points to 5.25%, is both an assessment of India’s current economy and also of what to expect over the next few months. Cumulatively, interest rates have been cut by 125 basis points in calendar year 2025. The last time such large cuts had been implemented was in 2019 when rates had been cut by 135 basis points, in reaction to a plummeting growth rate. India’s quarterly GDP growth rate had fallen from 8.9% in the March 2018 quarter to 3.3% by the quarter-ended December 2019. Growth is currently seeing the opposite trajectory. It has steadily been accelerating from 5.6% in Q2 of last year to the recently released 8.2% in Q2 of this year. From a growth perspective, there are at least two ways to look at the MPC’s interest rate moves. The first is that the central bank is not convinced that growth is currently as robust as the numbers suggest, and so feels monetary policy needs to be as supportive as possible. After all, it could have left rates unchanged at 5.5%. The second is that the MPC feels that Indian companies are still sitting on excess capacity, and so the risks of overheating the economy are slim. So, it might as well push for more growth. The reality is probably a combination of the two: real growth looks higher due to an unusually low deflator, and companies can certainly afford to invest more, even if this is fuelled by debt. A rate cut addresses both issues.`,      
-        
-`The Supreme Court’s direction to the CBI to conduct a pan-India investigation into cyber-crimes, and “digital arrest” scams in particular, might seem extraordinary, as such directions normally require State government consent. But by doing so, the Court has acknowledged the severity of the menace that transcends State jurisdictions and boundaries. The Court’s prioritisation of the “digital arrest” scam — fraudsters impersonate police or government officials in a video call, falsely accuse victims of crimes, and pressure them to transfer money to avoid arrest — is fully warranted. The government has estimated that this scam, which often targets senior citizens, has resulted in losses exceeding ₹3,000 crore. The Court has asked the CBI to target not just the scammers but also banking officials who facilitate the creation of “mule” accounts. This is necessary as these scams depend on a malleable financial architecture and therefore require the intervention of agencies such as the RBI, which has also been instructed by the Court to employ Artificial Intelligence and Machine Learning to trace the “layering” of proceeds through multiple accounts. The Court has also asked online intermediaries to cooperate with the CBI, invoking the IT Rules 2021. The Court is also right in asking the CBI to investigate other scams such as investment schemes and part-time job scams, subsequently.`,      
-        
-`The severity of cyber frauds, as National Crime Records Bureau data indicate, has risen significantly. However, while the judiciary and domestic policing can address the symptoms within India, the problem has another dimension — it is also transnational. The burgeoning of “scam centres” — compounds where trafficked workers, unable to escape due to violence, confiscated documents or debt bondage, are forced to run online fraud operations — in conflict-ridden zones of Southeast Asia suggests that the solution requires robust international diplomacy. The U.S., for instance, has established a Scam Center Strike Force to tackle the issue. Furthermore, Myanmar remains a hotbed for these operations, primarily because the illegally ruling junta benefits from taxing the proceeds of such crimes. Tackling this requires moving beyond bilateral requests. New Delhi must act in cohesion with ASEAN and the UN to sanction the illegal regime and cut off the financial lifelines of these modern-day slavery sweatshops. Domestically, the battle must also be fought on the grounds of digital literacy and capacity. As daily life and governance become increasingly digitised, there remains a glaring deficit in cyber awareness among the population. States, local administrations, and the RBI must launch widespread awareness campaigns. Simultaneously, there is an urgent need to upgrade the digital capabilities of State police.`,        
-        ];
-
-        const ctx = document.getElementById('wpm-chart').getContext('2d');
-        const wpmChart = new Chart(ctx, {
-            type: 'line',
-            data: { labels: [], datasets: [{ label: 'Net WPM', data: [], borderColor: '#007bff', backgroundColor: '#007bff40', borderWidth: 2, tension: 0.4, fill: true }] },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                scales: { y: { beginAtZero: true, title: { display: true, text: 'WPM' } }, x: { title: { display: true, text: '' } } },
-                plugins: { legend: { display: false } }
-            }
-        });
-
-
-
-
-        async function loadText() {
-            const mode = modeSelect.value;
-            let content;
-
-            if (mode === 'news') {
-            let currentIndex = parseInt(localStorage.getItem('newsIndex')) || 0;
-                content = newsBank[currentIndex % newsBank.length];
-                let nextIndex = (currentIndex + 1) % newsBank.length;
-                localStorage.setItem('newsIndex', nextIndex);
-            } else {
-                content = textBank[mode];
-            }
-
-            
-            content = content.replace(/\n/g, ' ').replace(/\s+/g, ' '); 
-
-            state.testText = content;
-            textDisplay.innerHTML = '';
-            state.testText.split('').forEach((char, index) => {
-                const charSpan = document.createElement('span');
-                charSpan.innerHTML = char === ' ' ? '&nbsp;' : char;
-                if (index === 0) {
-                    charSpan.classList.add('current');
-                }
-                textDisplay.appendChild(charSpan);
-            });
-            
-            textDisplay.scrollLeft = 0;
-        }
-
-        function updateMetrics() {
-            state.timeElapsed = state.initialTime - state.timeLeft;
-            const timeInMinutes = state.timeElapsed / 60;
-
-            const totalKeystrokes = state.correctKeystrokes + state.incorrectKeystrokes;
-
-            let netWPM = ((state.correctKeystrokes / 5) - state.totalErrors) / timeInMinutes;
-            if (netWPM < 0 || timeInMinutes === 0) {
-                netWPM = 0;
-            }
-
-            let accuracy = (totalKeystrokes > 0) ? (state.correctKeystrokes / totalKeystrokes) * 100 : 100;
-
-
-            netWpmEl.textContent = Math.round(netWPM);
-            accuracyEl.textContent = Math.round(accuracy);
-            errorsCountEl.textContent = state.totalErrors;
-
-
-            if (state.timeElapsed % 5 === 0 && state.timeElapsed > 0 && state.timeLeft > 0) {
-                state.wpmHistory.push(Math.round(netWPM));
-                state.historyLabels.push(state.timeElapsed);
-
-                wpmChart.data.labels = state.historyLabels;
-                wpmChart.data.datasets[0].data = state.wpmHistory;
-                wpmChart.update();
-            }
-        }
-
-        function updateTimer() {
-            if (state.timeLeft > 0) {
-                state.timeLeft--;
-                timeLeftEl.textContent = state.timeLeft;
-                updateMetrics();
-            } else {
-                clearInterval(state.timerId);
-                state.isRunning = false;
-                updateMetrics();
-                showResultsPopup();
-            }
-        }
-
-        function startTest() {
-            if (state.isRunning) return;
-
-            popupOverlay.style.display = 'none';
-            state.isRunning = true;
-            textInput.disabled = false;
-            textInput.focus();
-
-            
-            textInput.value = ''; 
-
-            state.timerId = setInterval(updateTimer, 1000);
-        }
-
-        function handleInput(event) {
-            if (!state.isRunning) return;
-            const typedValue = textInput.value;
-            const targetChar = state.testText[state.currentCharIndex];
-            const textSpans = textDisplay.querySelectorAll('span');
-
-           
-            if (event.inputType === 'deleteContentBackward') {
-                if (state.currentCharIndex > 0) {
-                    state.currentCharIndex--;
-                    textSpans[state.currentCharIndex].classList.remove('correct', 'incorrect');
-                    textSpans[state.currentCharIndex].classList.add('current');
-                    if (textSpans[state.currentCharIndex + 1]) {
-                        textSpans[state.currentCharIndex + 1].classList.remove('current');
-                    }
-
-                   
-                    if (state.currentCharIndex < state.testText.length - scrollThreshold) {
-                         
-                        const previousCharSpan = textSpans[state.currentCharIndex - 1];
-                        if (previousCharSpan) {
-                            textDisplay.scrollLeft = previousCharSpan.offsetLeft - (textDisplay.offsetWidth / 3);
-                        } else {
-                            textDisplay.scrollLeft = 0;
-                        }
-                    }
-
-                }
-               
-                textInput.value = typedValue.substring(0, state.currentCharIndex); 
-                return;
-            }
-
-           
-            if (typedValue.length > state.currentCharIndex + 1) {
-                textInput.value = typedValue.substring(0, state.currentCharIndex + 1);
-                return;
-            }
-
-            if (state.currentCharIndex >= state.testText.length) {
-                 
-                textInput.value = typedValue.substring(0, state.testText.length);
-                return;
-            }
-
-            const currentTypedChar = typedValue[typedValue.length - 1];
-
-            
-            if (textSpans[state.currentCharIndex]) {
-                textSpans[state.currentCharIndex].classList.remove('current');
-
-                if (currentTypedChar === targetChar) {
-                    textSpans[state.currentCharIndex].classList.add('correct');
-                    state.correctKeystrokes++;
-                } else {
-                    textSpans[state.currentCharIndex].classList.add('incorrect');
-                    state.incorrectKeystrokes++;
-                    state.totalErrors++;
-                }
-            }
-
-
-            state.currentCharIndex++;
-
-            if (state.currentCharIndex === state.testText.length) {
-                state.timeLeft = 0;
-                updateTimer();
-                return;
-            }
-
-            if (textSpans[state.currentCharIndex]) {
-                textSpans[state.currentCharIndex].classList.add('current');
-            }
-
-           
-            const currentCharSpan = textSpans[state.currentCharIndex];
-            if (currentCharSpan && state.currentCharIndex > scrollThreshold) {
-                const scrollPosition = currentCharSpan.offsetLeft - (textDisplay.offsetWidth / 3);
-                textDisplay.scrollLeft = scrollPosition;
-            }
-        }
-
-
-        function showResultsPopup() {
-
-    const BACKGROUND_IMAGE_URL = 'Time.png';
-
-    const finalWPM = netWpmEl.textContent;
-    const finalAccuracy = accuracyEl.textContent;
-
-
-    popupContent.innerHTML = `
-
-        <div id="result-background" style="
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('${BACKGROUND_IMAGE_URL}'); /* Image URL use kiya */
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0.8; /* Image ko halka karne ke liye */
-            z-index: 5; /* Background ko content se peeche rakhne ke liye */
-        "></div>
-
-        <div style="position: relative; z-index: 10; width: 100%; height: 100%; color: #333; padding: 10px;">
-
-
-
-            <div class="result-stats" style="
-                position: absolute;
-                background-color: white;
-                border: 3px solid;
-                border-color:#129612;
-                border-radius:15px;
-                bottom: 6%;
-                right: 10%;
-                font-size: 1.2em;
-                text-align: center;
-                width: 25%;
-            ">
-                <p style="margin: 5px 0;">Net WPM: <span style="font-weight: 700; color: #5cb85c;">${finalWPM}</span></p>
-                <p style="margin: 5px 0;">Accuracy: <span style="font-weight: 700; color: #5cb85c;">${finalAccuracy}%</span></p>
-                <p style="margin: 5px 0;">Total Errors: <span style="font-weight: 700; color: #d9534f;">${errorsCountEl.textContent}</span></p>
-            </div>
-
-            <div class="popup-controls" style="
-                position: absolute;
-                bottom: 8%;
-                // width: 30%;
-                left: 20%;
-                transform: translateX(-50%); /* Center horizontally */
-            ">
-                <button style="color:#14FF99; background-color:#129612;" onclick="window.location.reload()">Restart Test</button> 
-                <div class="popup-time-select" style="border:3px solid #129612; border-radius: 10px; overflow:hidden;" >
-                    <select id="popup-time-select">
-                        <option value="60">1 Min</option>
-                        <option value="180">3 Mins</option>
-                        <option value="300">5 Mins</option>
-                    </select>
-                    <input type="number" id="popup-custom-time" min="10" max="600" value="${state.initialTime}" placeholder="Custom (s)">
-                </div>
-            </div>
-
-        </div>
-    `;
-
-
-    
-    const popupTimeSelect = document.getElementById('popup-time-select');
-    const popupCustomTime = document.getElementById('popup-custom-time');
-
-    if (popupTimeSelect.querySelector(`option[value="${state.initialTime}"]`)) {
-         popupTimeSelect.value = state.initialTime;
-    } else {
-        popupTimeSelect.value = ''; 
-    }
-    popupCustomTime.value = state.initialTime;
-
-
-    popupOverlay.style.display = 'flex';
-    popupContent.classList.add('show');
-
+<script>
+   
+    const textBank = {
+        standard: "A journey of a thousand miles begins with a single step. The only way to do great work is to love what you do. Success is not final, failure is not fatal: it is the courage to continue that counts.",
+        code: "function fetchData(url) { return fetch(url).then(response => response.json()).catch(error => console.error('Error fetching:', error)); }"
+    };
+
+    const newsBank = [
+        `Nuclear power contributed only around 3% of the electricity generated in India in 2024-25. The government has set a target to install 100 GW of nuclear capacity by 2047.`,
+        `The Supreme Court’s direction to the CBI to conduct a pan-India investigation into cyber-crimes, and “digital arrest” scams in particular, might seem extraordinary.`,
+        `In line with a series of hostile moves, the U.S. seized a Venezuelan oil tanker, Skipper, on December 10. Venezuela called it piracy.`
+    ];
+
+    let state = {
+        testText: "", currentCharIndex: 0, totalErrors: 0, correctKeystrokes: 0,
+        incorrectKeystrokes: 0, timerId: null, initialTime: 60, timeLeft: 60,
+        isRunning: false, wpmHistory: [], historyLabels: [], timeElapsed: 0,
+    };
 
    
-}
+    const textDisplay = document.getElementById('typing-text-display');
+    const textInput = document.getElementById('text-input');
+    const modeSelect = document.getElementById('lesson-mode');
+    const timeUnitEl = document.getElementById('time-unit');
+    const timeValueEl = document.getElementById('time-value');
+    const netWpmEl = document.getElementById('net-wpm');
+    const accuracyEl = document.getElementById('accuracy');
+    const errorsCountEl = document.getElementById('errors-count');
+    const timeLeftEl = document.getElementById('time-left');
+    const popupOverlay = document.getElementById('popup-overlay');
+    const popupContent = document.getElementById('popup-content');
+    const initialStartBtn = document.getElementById('initial-start-btn');
 
-        function startCountdown() {
-            let count = 3;
-            popupContent.innerHTML = `<div class="countdown-number">${count}</div>`;
-            popupOverlay.style.display = 'flex';
-            popupContent.classList.add('show');
+    
+    const ctx = document.getElementById('wpm-chart').getContext('2d');
+    const wpmChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels: [], datasets: [{ label: 'Net WPM', data: [], borderColor: '#007bff', backgroundColor: '#007bff40', borderWidth: 2, tension: 0.4, fill: true }] },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
 
-            const countdownInterval = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    popupContent.innerHTML = `<div class="countdown-number">${count}</div>`;
-                } else if (count === 0) {
-                    popupContent.innerHTML = `<div class="countdown-number">GO!</div>`;
-                } else {
-                    clearInterval(countdownInterval);
-                    startTest();
-                }
-            }, 1000);
+    
+    async function loadText() {
+        const mode = modeSelect.value;
+        let content = (mode === 'news') ? newsBank[Math.floor(Math.random() * newsBank.length)] : textBank[mode];
+
+        if (content) {
+            textDisplay.classList.remove('loading-text');
+            state.testText = content.replace(/\s+/g, ' ');
+            textDisplay.innerHTML = '';
+            state.testText.split('').forEach((char, index) => {
+                const span = document.createElement('span');
+                span.innerHTML = char === ' ' ? '&nbsp;' : char;
+                if (index === 0) span.classList.add('current');
+                textDisplay.appendChild(span);
+            });
+            textDisplay.scrollLeft = 0;
         }
+    }
 
+    function syncTimeAndReset() {
+        const unit = timeUnitEl.value;
+        let val = parseInt(timeValueEl.value) || 0;
 
+        
+        if (unit === "minutes" && val > 10) val = 10;
+        if (unit === "seconds" && val > 600) val = 600;
+        timeValueEl.value = val;
 
-        function syncTimeAndReset() {
-                        let newTimeEl = customTimeInput;
-            let selectEl = timeSelect;
+        let totalSeconds = (unit === "minutes") ? val * 60 : val;
+        if (totalSeconds < 5) totalSeconds = 5;
 
-            let newTime = parseInt(selectEl.value);
-
-
-            if (newTimeEl.value) {
-                newTime = parseInt(newTimeEl.value);
-            }
-
-            if (isNaN(newTime) || newTime < 10) newTime = 60;
-
-
-            timeSelect.value = newTime;
-            customTimeInput.value = newTime;
-
-
-            resetTest(newTime);
-        }
-
-        function resetTest(newTime) {
-            clearInterval(state.timerId);
-
-            const timeToSet = newTime || state.initialTime;
-
-            state = {
-                testText: state.testText,
-                currentCharIndex: 0,
-                totalErrors: 0,
-                correctKeystrokes: 0,
-                incorrectKeystrokes: 0,
-                timerId: null,
-                initialTime: timeToSet,
-                timeLeft: timeToSet,
-                isRunning: false,
-                wpmHistory: [],
-                historyLabels: [],
-                timeElapsed: 0,
-            };
-
-
-            textInput.value = '';
-            textInput.disabled = true;
-            timeLeftEl.textContent = state.initialTime;
+        state.initialTime = totalSeconds;
+        state.timeLeft = totalSeconds;
+        timeLeftEl.textContent = totalSeconds;
+        
+        
+        if(!state.isRunning) {
             netWpmEl.textContent = '0';
             accuracyEl.textContent = '100';
             errorsCountEl.textContent = '0';
+        }
+    }
 
+    function startCountdown() {
+        if (state.timerId) clearInterval(state.timerId);
+        
+        
+        state.currentCharIndex = 0;
+        state.totalErrors = 0;
+        state.correctKeystrokes = 0;
+        state.incorrectKeystrokes = 0;
+        state.timeElapsed = 0;
+        state.wpmHistory = [];
+        state.historyLabels = [];
+        textInput.value = '';
+        textInput.disabled = true;
+        textInput.style.pointerEvents = "none";
 
-            wpmChart.data.labels = [];
-            wpmChart.data.datasets[0].data = [];
+        let count = 3;
+        popupOverlay.style.display = 'flex';
+        popupContent.classList.add('show');
+        
+        const countdownInterval = setInterval(() => {
+            if (count > 0) {
+                popupContent.innerHTML = `<div class="countdown-number">${count}</div>`;
+            } else if (count === 0) {
+                popupContent.innerHTML = `<div class="countdown-number">GO!</div>`;
+            } else {
+                clearInterval(countdownInterval);
+                initialStartBtn.textContent = "New Test";
+                startTest();
+            }
+            count--;
+        }, 1000);
+    }
+
+    function startTest() {
+        popupOverlay.style.display = 'none';
+        state.isRunning = true;
+        textInput.disabled = false;
+        textInput.style.pointerEvents = "auto";
+        textInput.focus();
+        
+        
+        wpmChart.data.labels = [];
+        wpmChart.data.datasets[0].data = [];
+        wpmChart.update();
+
+        state.timerId = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+        if (state.timeLeft > 0) {
+            state.timeLeft--;
+            timeLeftEl.textContent = state.timeLeft;
+            updateMetrics();
+        } else {
+            clearInterval(state.timerId);
+            state.isRunning = false;
+            textInput.disabled = true;
+            textInput.style.pointerEvents = "none";
+            showResultsPopup();
+        }
+    }
+
+    function updateMetrics() {
+        state.timeElapsed = state.initialTime - state.timeLeft;
+        const mins = state.timeElapsed / 60;
+        let netWPM = mins > 0 ? ((state.correctKeystrokes / 5) - state.totalErrors) / mins : 0;
+        netWPM = Math.max(0, Math.round(netWPM));
+        
+        netWpmEl.textContent = netWPM;
+        const total = state.correctKeystrokes + state.incorrectKeystrokes;
+        accuracyEl.textContent = total > 0 ? Math.round((state.correctKeystrokes / total) * 100) : 100;
+        errorsCountEl.textContent = state.totalErrors;
+
+        if (state.timeElapsed % 5 === 0 && state.timeElapsed > 0) {
+            state.wpmHistory.push(netWPM);
+            state.historyLabels.push(state.timeElapsed);
+            wpmChart.data.labels = state.historyLabels;
+            wpmChart.data.datasets[0].data = state.wpmHistory;
             wpmChart.update();
+        }
+    }
 
-            popupOverlay.style.display = 'none';
+    function handleInput(event) {
+        if (!state.isRunning) return;
+        const spans = textDisplay.querySelectorAll('span');
+        const typedValue = textInput.value;
+        const targetChar = state.testText[state.currentCharIndex];
 
-            loadText();
+        if (event.inputType === 'deleteContentBackward') {
+            if (state.currentCharIndex > 0) {
+                state.currentCharIndex--;
+                spans[state.currentCharIndex].className = 'current';
+                if (spans[state.currentCharIndex + 1]) spans[state.currentCharIndex + 1].className = '';
+            }
+            return;
         }
 
-        textInput.addEventListener('input', handleInput);
-        initialStartBtn.addEventListener('click', () => {
-             syncTimeAndReset();
-             startCountdown();
-        });
+        if (typedValue[typedValue.length - 1] === targetChar) {
+            spans[state.currentCharIndex].className = 'correct';
+            state.correctKeystrokes++;
+        } else {
+            spans[state.currentCharIndex].className = 'incorrect';
+            state.totalErrors++;
+            state.incorrectKeystrokes++;
+        }
 
+        state.currentCharIndex++;
+        if (state.currentCharIndex >= state.testText.length) {
+            state.timeLeft = 0;
+            updateTimer();
+        } else {
+            spans[state.currentCharIndex].className = 'current';
+            if (state.currentCharIndex > 20) textDisplay.scrollLeft = spans[state.currentCharIndex].offsetLeft - 200;
+        }
+    }
 
-        modeSelect.addEventListener('change', syncTimeAndReset);
-        timeSelect.addEventListener('change', syncTimeAndReset);
-        customTimeInput.addEventListener('change', syncTimeAndReset);
+    function showResultsPopup() {
+        const BACKGROUND_IMAGE_URL = 'Time.png';
+        popupContent.innerHTML = `
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('${BACKGROUND_IMAGE_URL}'); background-size: cover; background-position: center; opacity: 0.8; z-index: 5;"></div>
+            <div style="position: relative; z-index: 10; width: 100%; height: 100%; color: #333; padding: 10px;">
+                <div class="result-stats" style="position: absolute; background-color: white; border: 3px solid #129612; border-radius:15px; bottom: 6%; right: 10%; font-size: 1.2em; text-align: center; width: 25%;">
+                    <p>Net WPM: <span style="color: #5cb85c;">${netWpmEl.textContent}</span></p>
+                    <p>Accuracy: <span style="color: #5cb85c;">${accuracyEl.textContent}%</span></p>
+                    <p>Errors: <span style="color: #d9534f;">${state.totalErrors}</span></p>
+                </div>
+                <div class="popup-controls" style="position: absolute; bottom: 8%; left: 20%; transform: translateX(-50%);">
+                    <button id="popup-restart-btn" style="color:#14FF99; background-color:#129612; padding: 12px 25px; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer;">Restart Test</button> 
+                    <div class="popup-time-select" style="border:3px solid #129612; border-radius: 10px; overflow:hidden; background:white; display: flex; margin-top:10px;">
+                        <select id="popup-time-unit" style="border:none; padding:8px; outline:none;">
+                            <option value="seconds">Sec</option>
+                            <option value="minutes">Min</option>
+                        </select>
+                        <input type="number" id="popup-time-value" min="1" style="border:none; border-left:1px solid #129612; width:70px; padding:8px; outline:none;">
+                    </div>
+                </div>
+            </div>
+        `;
 
+        const pUnit = document.getElementById('popup-time-unit');
+        const pValue = document.getElementById('popup-time-value');
+        pUnit.value = timeUnitEl.value;
+        pValue.value = timeValueEl.value;
 
+        document.getElementById('popup-restart-btn').onclick = () => {
+            timeUnitEl.value = pUnit.value;
+            timeValueEl.value = pValue.value;
+            syncTimeAndReset();
+            startCountdown();
+        };
+
+        popupOverlay.style.display = 'flex';
+        popupContent.classList.add('show');
+    }
+
+    
+    textInput.addEventListener('input', handleInput);
+    initialStartBtn.addEventListener('click', () => {
         syncTimeAndReset();
-    </script>
+        startCountdown();
+    });
+    modeSelect.addEventListener('change', loadText);
+
+    
+    window.onload = () => {
+        timeUnitEl.value = "minutes";
+        timeValueEl.value = "1";
+        textInput.disabled = true;
+        textInput.style.pointerEvents = "none";
+        loadText();
+        syncTimeAndReset();
+    };
+</script>
 </body>
 </html>
